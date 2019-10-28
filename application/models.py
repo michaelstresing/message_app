@@ -20,7 +20,7 @@ class User(db.Model):
 
     password_hash = Column(String(128))
 
-    salt = Colmn()
+    salt = Column()
 
     datecreated = Column(DateTime)
 
@@ -49,6 +49,8 @@ class User(db.Model):
         #    'duedate':self.duedate
        }
 
+
+
 class Group(db.Model):
 
 
@@ -70,11 +72,7 @@ class Messages(db.Model):
 
     __tablename__ = "messages"
 
-    # GUID
-    # groupid
-    # senderid
-    # content
-    # timesnet (auto generated)
+
 
 class Resources(db.model):
 

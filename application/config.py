@@ -1,6 +1,5 @@
 import os
 
-
 class Config(object):
 
     DEBUG = False
@@ -16,6 +15,8 @@ class Config(object):
 
     # postgres
     SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://{user}:{pw}@{url}/{db}'
+
+
 
     # Flask-User configuration
     # USER_APP_NAME = "Flasky To-Do App"      # Shown in and email templates and page footers

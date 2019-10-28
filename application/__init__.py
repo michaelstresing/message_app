@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, g
 from flask_sqlalchemy import SQLAlchemy
 
 from .config import ProductionConfig, DevelopmentConfig
@@ -20,3 +20,5 @@ def create_app():
         db.create_all()
 
         return app
+
+
