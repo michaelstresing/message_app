@@ -55,5 +55,3 @@ def send_message(chat_id):
         , dict(chat_id=chat_id, sender_id=request.args['user_id'], content=message.content))
         db.session.commit()
     return "Created new Message"
-
-
