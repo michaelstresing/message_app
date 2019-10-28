@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
       {% if title %}
@@ -7,8 +8,12 @@
       {% endif %}
     </head>
     <body>
-        <div>Microblog: <a href="/">Home</a></div>
-        <hr>
+      <div>
+          Message Blog:
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('login') }}">Sign In</a>
+          <a href="{{ url_for('logout') }}">Sign Out</a>
+      </div>
         {% block content %}{% endblock %}
     </body>
 </html>

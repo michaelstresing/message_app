@@ -6,7 +6,7 @@ from application.models import Message
 
 MessageAPI = Blueprint("messages_api", __name__)
 
-@MessageAPI.route('/chats/<chat_id>/messages', methods=['GET'])
+@MessageAPI.route('/<chat_id>/messages', methods=['GET'])
 def get_messages(chat_id):
     """
     Gets all the messages for a user_id and chat_id
@@ -33,10 +33,10 @@ def get_messages(chat_id):
         '''
         , {chat_id: chat_id, user_id: request.args['user_id'] })
     db.session.commit()
-    return jsonify(result.to_messages())
+    return jsonify(result.to_messages()), 200
 
 
-@MessageAPI.route('/chats/<chat_id>/messages', methods=['POST'])
+@MessageAPI.route('/<chat_id>/messages', methods=['POST'])
 def send_message(chat_id):
     """
     Allows a user to send a message. Takes as arguments ChatID, SenderID and Content
@@ -55,5 +55,3 @@ def send_message(chat_id):
         , dict(chat_id=chat_id, sender_id=request.args['user_id'], content=message.content))
         db.session.commit()
     return "Created new Message"
-
-
