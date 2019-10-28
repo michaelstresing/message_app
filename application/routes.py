@@ -4,9 +4,11 @@ from flask import render_template
 from .models import User, Chat, Message
 from application.users.routes import UserAPI
 from application.users.register import RegistrationForm, LoginForm
+from application.messages.routes import MessageAPI
 from flask_login import current_user, login_user, logout_user, login_required
 
 app.register_blueprint(UserAPI, url_prefix='/user')
+app.register_blueprint(MessageAPI, url_prefix='/api')
 
 # homepage
 @app.route('/')
