@@ -22,7 +22,7 @@ def create_user():
     
 
 @UserAPI.route('/<string:username>')
-def get_user_byusername(username):
+def get_user(username):
     """API request to Get a User by username"""
 
     user = User.query.filter(User.username == username).first()
