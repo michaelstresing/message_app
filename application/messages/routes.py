@@ -1,12 +1,13 @@
 from flask import Flask, jsonify, render_template
 from flask import request, Blueprint
 import sqlalchemy
-from . import db
-from application import models
+from application import models, db
+from application.models import Message
 
 MessageAPI = Blueprint("messages_api", __name__)
-@MessageAPI.route('/api/chats/<ChatID>/messages?UserID=<UserID>', methods=['GET'])
-def get_messages():
+
+@MessageAPI.route('/chats/<chat_id>/messages', methods=['GET'])
+def get_messages(chat_id):
     """
     Gets all the messages for a user_id and chat_id
     """
@@ -14,44 +15,45 @@ def get_messages():
     result = db.session.execute(
         '''
         SELECT 
-          m.MessageID
-         ,m.ChatID
-         ,m.SenderID
+          m.message_id
+         ,m.chat_id
+         ,m.sender_id
          ,m.content
          ,m.timesent 
         FROM 
           messages AS m 
         INNER JOIN 
-          group_users AS gu 
+          chat_users AS gu 
         ON 
-          gu.ChatID = m.ChatID 
+          gu.chat_id = m.chat_id 
         WHERE 
-          m.ChatID = :chat_id 
+          m.chat_id = :chat_id 
         AND 
-          gu.UserID = :user_id'
+          gu.user_id = :user_id'
         '''
-        , {chat_id: ChatID, user_id: UserID })
+        , {chat_id: chat_id, user_id: request.args['user_id'] })
     db.session.commit()
-    return jsonify(result.to_message())
+    return jsonify(result.to_messages())
 
 
-@MessageAPI.route('/api/chats/<ChatID>/messages?UserID=<UserID>', methods=['POST'])
-def send_message():
+@MessageAPI.route('/chats/<chat_id>/messages', methods=['POST'])
+def send_message(chat_id):
     """
-    Allows a user to send a message. Takes as arguments GroupID, SenderID and Content
+    Allows a user to send a message. Takes as arguments ChatID, SenderID and Content
     """
     #
     if request.json: # If there is data in the POST request
-        data = request.json.to_message()
+        message = Message.from_messages(request.json, chat_id, request.args['user_id'])
 
         result = db.session.execute(
             '''
             INSERT INTO 
-              messages AS m (m.GroupID, m.SenderID, m.content) 
+              messages (chat_id, sender_id, content) 
             VALUES 
               (:chat_id, :sender_id, :content)
             '''
-        ,{chat_id: data['ChatID'], sender_id: data['SenderID'], content: data['content']})
-    return "Created new message "
+        , dict(chat_id=chat_id, sender_id=request.args['user_id'], content=message.content))
+        db.session.commit()
+    return "Created new Message"
 
 
