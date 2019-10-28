@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from datetime import datetime
 
 from application import db
 from application.models import User
@@ -18,20 +19,10 @@ def create_user():
     db.session.add(user)
     db.session.commit()
     return jsonify(), 200
-
-
-@UserAPI.route('/<int:UserID>')
-def get_user_byid(UserID):
-    """API request to Get a User by ID"""
-
-    user = User.query.filter(User.UserID == UserID).first()
-    if user is None:
-        return 'User not found', 404
-    return jsonify(user.to_user()), 200
-
+    
 
 @UserAPI.route('/<string:username>')
-def get_user_byusername(UserID):
+def get_user_byusername(username):
     """API request to Get a User by username"""
 
     user = User.query.filter(User.username == username).first()
@@ -43,25 +34,24 @@ def get_user_byusername(UserID):
 @UserAPI.route('/', methods=['GET'])
 def get_all():
     user = User.query.all()
-    jsonuser = [usr.to_dict() for usr in User]
+    jsonuser = [usr.to_user() for usr in User]
     return jsonify(jsonuser), 200
 
 
-@UserAPI.route('<int:UserID>', methods=['PUT'])
-def edit_user(UserID):
+@UserAPI.route('<string:username>', methods=['PUT'])
+def edit_user(username):
 
-    User.query.filter(User.UserID == UserID).update(request.json)
-    user = User.query.filter(User.UserID == UserID).first_or_404()
+    User.query.filter(User.username == username).update(request.json)
+    user = User.query.filter(User.username == username).first_or_404()
+    user.dateupdated = datetime.utcnow()
     db.session.commit()
-    return jsonify(User.to_user()), 200
+    return jsonify(user.to_user()), 200
 
-@UserAPI.route('/<int:UserID>', methods=['DELETE'])
-def delete_user(UserID):
 
-    user = User.query.filter(User.UserID == UserID).first()
-    if user is None:
-        return 'User not found', 404
+@UserAPI.route('/<string:username>', methods=['DELETE'])
+def delete_user(username):
 
+    user = User.query.filter(User.username == username).first_or_404()
     db.session.delete(user)
     db.session.commit()
     return jsonify(), 200
