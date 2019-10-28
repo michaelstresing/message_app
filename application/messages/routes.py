@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template
 from flask import request, Blueprint
 import sqlalchemy
 from application import models, db
-from application.models import Message
+from application.models import Message, Chat, ChatsUsers 
 
 MessageAPI = Blueprint("messages_api", __name__)
 
@@ -55,3 +55,18 @@ def send_message(chat_id):
         , dict(chat_id=chat_id, sender_id=request.args['user_id'], content=message.content))
         db.session.commit()
     return "Created new Message"
+
+# @MessageAPI.route('/create', methods=['POST'])
+# def create_user():
+#     """API request to Create a new Chat"""
+
+#     try:
+#         chat = Chat.from_chat(request.json)
+#     except KeyError as e:
+#         return jsonify(f'Missing key: {e.args[0]}'), 400
+
+#     db.session.add(chat)
+#     db.session.commit()
+#     return jsonify(), 200
+
+# @MessageAPI.route('/<chat_id>')
