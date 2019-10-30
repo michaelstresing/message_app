@@ -37,7 +37,7 @@ class User(UserMixin, db.Model):
     datecreated = Column(DateTime(timezone=True),
                              server_default=func.now())
     dateupdated = Column(DateTime, default=None)
-
+    profpic = Column(String(128), default=None)
     chats = relationship("Chat",
                         secondary=chat_lookup,
                         back_populates='users')
@@ -83,8 +83,7 @@ class Chat(db.Model):
     chatname = Column(String(64), index=True)
     datecreated = Column(DateTime(timezone=True),
                              server_default=func.now())
-    messagessent = Column(Integer)
-
+    messagessent = Column(Integer, default=None)
     users = relationship("User",
                         secondary=chat_lookup,
                         back_populates='chats')

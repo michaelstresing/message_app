@@ -11,29 +11,11 @@ def get_messages(chat_id):
     """
     Gets all the messages for a user_id and chat_id
     """
-
-    result_proxy = db.session.execute(
-        '''
-        SELECT 
-          m.message_id
-         ,m.chat_id
-         ,m.sender_id
-         ,m.content
-         ,m.timesent 
-        FROM 
-          messages AS m 
-        INNER JOIN 
-          chat_users AS gu 
-        ON 
-          gu.chat_id = m.chat_id 
-        WHERE 
-          m.chat_id = :chat_id 
-        AND 
-          gu.user_id = :id'
-        '''
-        , dict(chat_id=chat_id, id=request.args['id']))
-    result = [Message.from_messages(r, chat_id, request.args['id']).to_messages() for r in result_proxy]
-    return jsonify(result)
+    userid = request.args["user_id"]
+    messagelist = Message.query.filter(Message.chat_id == chat_id, Message.sender_id == userid).all()
+    if messagelist is None:
+        return 'No messages!', 404
+    return jsonify([msg.to_messages() for msg in messagelist]), 200
 
 
 @MessageAPI.route('/<chat_id>/messages', methods=['POST'])
