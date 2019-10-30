@@ -7,12 +7,26 @@
 
     {% block content %}
         <h1>Register</h1>
-        <form action="index" method="post">
+        <form action="" method="POST">
             {{ form.hidden_tag() }}
             <p>
                 {{ form.username.label }}<br>
                 {{ form.username(size=32) }}<br>
                 {% for error in form.username.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.first_name.label }}<br>
+                {{ form.first_name(size=64) }}<br>
+                {% for error in form.first_name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.last_name.label }}<br>
+                {{ form.last_name(size=64) }}<br>
+                {% for error in form.last_name.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </p>
@@ -39,5 +53,8 @@
             </p>
             <p>{{ form.submit() }}</p>
         </form>
+        {% if form.errors %}
+        {{ form.errors }}
+        {% endif %}
     {% endblock %}
 </body>

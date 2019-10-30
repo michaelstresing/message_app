@@ -1,29 +1,31 @@
-from flask import current_app as app
+from flask import current_app as app, request
 from flask import render_template, flash, redirect, url_for
 
-from .models import User, Chat, Message
+from .models import User, Chat, Message, db
 from application.users.routes import UserAPI
 from application.users.authentication import RegistrationForm, LoginForm
 from application.messages.routes import MessageAPI
+from application.chats.routes import ChatsAPI
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 app.register_blueprint(UserAPI, url_prefix='/api/users')
 app.register_blueprint(MessageAPI, url_prefix='/api/chats')
+app.register_blueprint(ChatsAPI, url_prefi='/api/')
 
 # homepage
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    return render_template('index.html', title='Home')
+    return render_template('index.html', title='Home', user=current_user, chats=current_user.chats)
 
 # registration
 @app.route('/signup', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    form = RegistrationForm()
+    form = RegistrationForm(request.form)
     if form.validate_on_submit():
         user = User(username=form.username.data,
                     email=form.email.data,
@@ -41,9 +43,9 @@ def register():
 # Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+    form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
@@ -52,7 +54,7 @@ def login():
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
-        return redirect(url_for('index'))
+        return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
 #Logout Route

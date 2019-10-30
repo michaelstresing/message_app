@@ -7,7 +7,7 @@ from application.models import User
 UserAPI = Blueprint('user_api', __name__)
 
 
-@UserAPI.route('/create', methods=['POST'])
+@UserAPI.route('/', methods=['POST'])
 def create_user():
     """API request to Create a new User"""
 
@@ -34,7 +34,7 @@ def get_user(username):
 @UserAPI.route('/', methods=['GET'])
 def get_all():
     user = User.query.all()
-    jsonuser = [usr.to_user() for usr in User]
+    jsonuser = [usr.to_user() for usr in user]
     return jsonify(jsonuser), 200
 
 

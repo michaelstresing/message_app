@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template
 from flask import request, Blueprint
 import sqlalchemy
 from application import models, db
-from application.models import Message, Chat, ChatsUsers 
+from application.models import Message
 
 MessageAPI = Blueprint("messages_api", __name__)
 
@@ -11,62 +11,55 @@ def get_messages(chat_id):
     """
     Gets all the messages for a user_id and chat_id
     """
-
-    result = db.session.execute(
-        '''
-        SELECT 
-          m.message_id
-         ,m.chat_id
-         ,m.sender_id
-         ,m.content
-         ,m.timesent 
-        FROM 
-          messages AS m 
-        INNER JOIN 
-          chat_users AS gu 
-        ON 
-          gu.chat_id = m.chat_id 
-        WHERE 
-          m.chat_id = :chat_id 
-        AND 
-          gu.user_id = :user_id'
-        '''
-        , {chat_id: chat_id, user_id: request.args['user_id'] })
-    db.session.commit()
-    return jsonify(result.to_messages()), 200
+    userid = request.args["user_id"]
+    messagelist = Message.query.filter(Message.chat_id == chat_id, Message.sender_id == userid).all()
+    if messagelist is None:
+        return 'No messages!', 404
+    return jsonify([msg.to_messages() for msg in messagelist]), 200
 
 
 @MessageAPI.route('/<chat_id>/messages', methods=['POST'])
 def send_message(chat_id):
     """
-    Allows a user to send a message. Takes as arguments ChatID, SenderID and Content
+    Allows a user to send a message. Takes as arguments chat_id, sender_id and sender
     """
     #
     if request.json: # If there is data in the POST request
-        message = Message.from_messages(request.json, chat_id, request.args['user_id'])
+        message = Message.from_messages(request.json, chat_id, request.args['id'])
 
-        result = db.session.execute(
+        db.session.execute(
             '''
             INSERT INTO 
               messages (chat_id, sender_id, content) 
             VALUES 
               (:chat_id, :sender_id, :content)
+            ON CONFLICT DO NOTHING
             '''
-        , dict(chat_id=chat_id, sender_id=request.args['user_id'], content=message.content))
+        , dict(chat_id=chat_id, sender_id=request.args['id'], content=message.content)
+        )
         db.session.commit()
-    return "Created new Message"
+        return "Created new Message"
+    else:
+        return "Error"
 
-# @MessageAPI.route('/create', methods=['POST'])
-# def create_user():
-#     """API request to Create a new Chat"""
-
-#     try:
-#         chat = Chat.from_chat(request.json)
-#     except KeyError as e:
-#         return jsonify(f'Missing key: {e.args[0]}'), 400
-
-#     db.session.add(chat)
-#     db.session.commit()
-#     return jsonify(), 200
-
-# @MessageAPI.route('/<chat_id>')
+@MessageAPI.route('/<chat_id>/messages', methods=['DELETE'])
+def delete_message(chat_id):
+    """
+    Delete a message.
+    """
+    if request.json:
+        for row in request.json:
+            message = Message.from_messages(row, chat_id, request.args['id'])
+            db.session.execute(
+                '''
+                DELETE FROM
+                  messages
+                WHERE
+                  message_id = :message_id
+                '''
+                , dict(message_id=message.message_id)
+            )
+        db.session.commit()
+        return "Successfully deleted message"
+    else:
+        return "Error"
