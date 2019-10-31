@@ -3,6 +3,7 @@ from flask import request, Blueprint
 import sqlalchemy
 from application import models, db
 from application.models import Message
+from flask_login import current_user
 
 MessageAPI = Blueprint("messages_api", __name__)
 
@@ -11,7 +12,7 @@ def get_messages(chat_id):
     """
     Gets all the messages for a user_id and chat_id
     """
-    userid = request.args["user_id"]
+    userid = str(current_user.get_id())
     messagelist = Message.query.filter(Message.chat_id == chat_id, Message.sender_id == userid).all()
     if messagelist is None:
         return 'No messages!', 404
@@ -21,26 +22,19 @@ def get_messages(chat_id):
 @MessageAPI.route('/<chat_id>/messages', methods=['POST'])
 def send_message(chat_id):
     """
-    Allows a user to send a message. Takes as arguments chat_id, sender_id and sender
+    Allows a user to send a message. Takes as arguments chat_id, sender_id and content
     """
-    #
-    if request.json: # If there is data in the POST request
-        message = Message.from_messages(request.json, chat_id, request.args['id'])
+    user_id = str(current_user.get_id())
+    messagetext = request.json["content"]
 
-        db.session.execute(
-            '''
-            INSERT INTO 
-              messages (chat_id, sender_id, content) 
-            VALUES 
-              (:chat_id, :sender_id, :content)
-            ON CONFLICT DO NOTHING
-            '''
-        , dict(chat_id=chat_id, sender_id=request.args['id'], content=message.content)
-        )
-        db.session.commit()
-        return "Created new Message"
-    else:
-        return "Error"
+    try:
+        newmessage = Message.from_messages(messagetext, chat_id, user_id)
+    except KeyError as e:
+        return jsonify(f'Missing key: {e.args[0]}'), 400
+
+    db.session.add(newmessage)
+    db.session.commit()
+    return jsonify(newmessage.to_messages()), 200
 
 @MessageAPI.route('/<chat_id>/messages', methods=['DELETE'])
 def delete_message(chat_id):

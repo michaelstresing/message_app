@@ -75,7 +75,7 @@ class User(UserMixin, db.Model):
 
 
 class Chat(db.Model):
-    """ Data Model for Conversations"""
+    """ Data Model for Conversations """
 
     __tablename__ = 'chats'
 
@@ -95,7 +95,6 @@ class Chat(db.Model):
             # chat_id =dict['chat_id'],
             chatname =dict['chatname']
             # datecreated =dict['datecreated'],
-            # messagessent =dict['messagessent']
         )
     
     def to_chat(self):
@@ -120,12 +119,12 @@ class Message(db.Model):
                              server_default=func.now())
 
     @staticmethod
-    def from_messages(dict, chat_id, user_id):
+    def from_messages(content, chat_id, sender_id):
 
         return Message(
-
-            sender_id = user_id,
-            content =dict['content'],
+            chat_id = chat_id,
+            sender_id = sender_id,
+            content = content
         )
     
     def to_messages(self):
