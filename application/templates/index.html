@@ -13,42 +13,50 @@
         <div id="header-sidebar">
             <div id="self-image" class="head-img-wrap">
                 {% if user.profpic %}
-                <button>
+                <button id="open-profile-modal-button">
                     <img id="convo-image" class="icon-img" src="{{ user.profpic }}" alt="">
                 </button>
                 {% else %}
-                <button>
+                <button id="open-profile-modal-button">
                     <img id="convo-image" class="icon-img" src="{{ url_for('static', filename='images/pup1.jpg') }}" alt="">
                 </button>  
                 {% endif %}
             </div>
             <!-- The Profile Modal -->
-            <!-- <div id="profileModal" class="modal">
-                     Modal content 
+            <div id="profileModal" class="modal">
+                     <!-- Modal content  -->
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header" id="profile_modal_header">
                             <span class="profileclose">&times;</span>
-                            <h2>New Chat</h2>
+                            <h2 id="profile_modal_name">@{{ user.username }}</h2>
+                            {% if user.profpic %}
+                            <img id="convo-image" class="icon-img" src="{{ user.profpic }}" alt="">
+                            {% else %}
+                            <img id="convo-image" class="icon-img" src="{{ url_for('static', filename='images/pup1.jpg') }}" alt="">
+                            {% endif %}
                         </div>
                         <div class="modal-body">
-                            <input type="text" name="new_chat_name" id="new_chat_name" placeholder="Enter Chat Name">
-                            <input type="text" name="new_chat_recipient" id="new_chat_recipient" placeholder="Username of recipient">
-                            <input type="hidden" name="user_id" id="creator-name" value="{{ user.id }}">
+                            <br>
+                            <div>Profile for: {{ user.first_name }} {{ user.last_name }}</div>
+                            <br>
+                            <div>Email: {{ user.email }}</div>
+                            <br>
+                            <div>Bio, editing abilites and more coming soon...</div>
                         </div>
-                        <div class="modal-footer">
-                            <button data-click="create-chat" class="svg-wrap" onclick="createNewChat()">Create New Chat</button> 
+                        <div class="modal-footer" id="profile_modal_footer">
+                            <a href="{{ url_for('logout') }}" id="log-out-button">Log Out</a>
                         </div>
                     </div>
-                </div> -->
+                </div>
         </div>
         <div id="header-main">
             <div id="contact-header">
                 <div class="head-img-wrap">
-                    <!-- {% if user.profpic %}
+                    {% if user.profpic %}
                     <img id="convo-image" class="icon-img" src="{{ user.profpic }}" alt="">
                     {% else %}
-                    <img id="convo-image" class="icon-img" src="{{ url_for('static', filename='images/pup1.jpg') }}" alt="">
-                    {% endif %} -->
+                    <img id="convo-image" class="icon-img" src="{{ url_for('static', filename='images/pup2.jpg') }}" alt="">
+                    {% endif %}
                 </div>
                 <div class="header-chat-name">
                     <p id="chat-name">input chat name here</p>

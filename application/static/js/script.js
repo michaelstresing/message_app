@@ -30,6 +30,10 @@ const convoClick = (event) => {
     const chat_id = dataAttributes.chat_id;
     document.querySelector('#sndr-chat_id').value = chat_id;
     retrieveMessages(dataAttributes);
+    // const headerElement = document.querySelector('#header-main')
+    // let chatnameHeader = document.createElement('p');
+    // chatnameHeader.id.add("header-chat-name");
+    // headerElement.appendChild(chatnameHeader);
   }
 }
 
@@ -52,6 +56,7 @@ const addMessages = (messages) => {
 }
 
 const addMessage = (currentmessage) => {
+    console.log(currentmessage)
     const pageElement = document.querySelector('#main-chat-wrap');
 
     let messageDiv = document.createElement('div');
@@ -59,7 +64,12 @@ const addMessage = (currentmessage) => {
 
     let messageIo = document.createElement('div');
     messageIo.classList.add('message')
-    messageIo.classList.add(currentmessage.sent ? 'out' : 'in')
+
+    if (currentmessage["sender_id"] == document.querySelector('#sndr-name').value) {
+      messageIo.classList.add('out')
+    } else {
+      messageIo.classList.add('in')
+    }
 
     let messageContent = document.createElement('p');
     messageContent.classList.add('mssg');
@@ -130,6 +140,7 @@ chatspan.onclick = function() {
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
+  console.log("clicked off")
   if (event.target == chatmodal) {
     chatmodal.style.display = "none";
   }
@@ -181,32 +192,44 @@ const createNewChat = () => {
 }
 
 
-// // 
-// // Profile Modal 
-// // 
+// 
+// Profile Modal 
+// 
 
-// // Get the modal
-// const profilemodal = document.getElementById("profileModal");
+// Get the modal
+const profilemodal = document.getElementById("profileModal");
 
-// // Get the button that opens the modal
-// const profilebtn = document.getElementById("open-chat-modal-button");
+// Get the button that opens the modal
+const profilebtn = document.getElementById("open-profile-modal-button");
 
-// // Get the <span> element that closes the modal
-// const profilespan = document.getElementsByClassName("profileclose")[0];
+// Get the <span> element that closes the modal
+const profilespan = document.getElementsByClassName("profileclose")[0];
 
-// // When the user clicks the button, open the modal 
-// profilebtn.onclick = function() {
-//   profilemodal.style.display = "block";
-// }
+// When the user clicks the button, open the modal 
+profilebtn.onclick = function() {
+  profilemodal.style.display = "block";
+}
 
-// // When the user clicks on <span> (x), close the modal
-// profilespan.onclick = function() {
-//   profilemodal.style.display = "none";
-// }
+// When the user clicks on <span> (x), close the modal
+profilespan.onclick = function() {
+  profilemodal.style.display = "none";
+}
 
-// // When the user clicks anywhere outside of the modal, close it
-// window.onclick = function(event) {
-//   if (event.target == profilemodal) {
-//     profilemodal.style.display = "none";
-//   }
-// }
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == profilemodal) {
+    console.log("clicked off")
+    profilemodal.style.display = "none";
+  }
+}
+
+// 
+// Log Out 
+// 
+
+const logUserOut = () => {
+  logouturl = `/logout/`
+    fetch(logouturl, {
+      method: 'GET',
+  }).then(window.location.reload(true))     
+}
