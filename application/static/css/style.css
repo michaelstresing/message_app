@@ -39,6 +39,13 @@ img.icon-img {
     height: 50px;
     width: 50px;
     border-radius: 50%;
+    border: 0;
+}
+
+#open-profile-modal-button {
+    border-radius: 100px;
+    border: 0px;
+    outline: 0;
 }
 
 #header-sidebar-icons {
@@ -112,13 +119,15 @@ img.icon-img {
     width: 35%;
     background-color: #bbdefb ;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
     border: 1px solid #558b2f;
     border-radius: 30px;
     margin: 5px 5px 5px 10px;
     position: relative;
+
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow-y: auto;
 }
 
 .chat-bubble-wrap {
@@ -186,7 +195,7 @@ img.icon-img {
 
 .convo-info {
     width: calc(100% - 100px);
-    height: 100%;
+    height: 70px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -309,6 +318,14 @@ p.mssg {
     background-color: #dcf8c6;
     align-self: flex-end;
     text-align: right
+}
+
+#log-out-button {
+    display: inline-block;
+    padding: 5px;
+    background: #dcf8c6;
+    border-radius: 10px;
+    color: black;
 }
 
 .message.out .mssg-pointer {
@@ -448,3 +465,17 @@ p.mssg-time {
     from {opacity: 0} 
     to {opacity: 1}
   }
+
+  /* ****************
+  Modal for Profile
+***************** */
+
+#profile_modal_name {
+    width: 50%;
+    display: flex;
+    margin: 10px 5px;
+}
+
+#profile_modal_header {
+    display: flex;
+}
