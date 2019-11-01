@@ -59,7 +59,6 @@
                     {% endif %}
                 </div>
                 <div class="header-chat-name">
-                    <p id="chat-name">input chat name here</p>
                 </div>
             </div>
         </div>
@@ -81,7 +80,7 @@
             <div id="convo-wrap">
                 <!-- <div class="convo active"> -->
                 {% for chat in chats %}
-                    <div class="convo" data-chat_id="{{ chat.chat_id }}" data-user_id="{{ current_user.id }}">
+                    <div class="convo" data-chat_id="{{ chat.chat_id }}" data-chat_name="{{ chat.chatname }}" data-user_id="{{ current_user.id }}">
                         <div class="head-img-wrap">
                             <!-- <img class="icon-img" src="{{ url_for('static', filename='images/' + 'user.profpic') }}" alt=""> -->
                         </div>

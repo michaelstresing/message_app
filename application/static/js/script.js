@@ -5,6 +5,7 @@
 const conversationElements = document.getElementsByClassName('convo');
 
 const clearMessages = () => {
+  console.log('CLEARING')
   const pageElement = document.querySelector('#main-chat-wrap');
   while (pageElement.firstChild) {
     pageElement.removeChild(pageElement.firstChild)
@@ -18,22 +19,51 @@ const setActive = (conversation) => {
   conversation.classList.add('active')
 } 
 
+const clearChatNamefromHeader = () => {
+  const headerElement = document.querySelector('.header-chat-name')
+  while (headerElement.firstChild) {
+    headerElement.removeChild(headerElement.firstChild)
+  }
+}
+
+const addChatNametoHeader = (chatname) => {
+  const headerElement = document.querySelector('.header-chat-name')
+  let chatnameHeader = document.createElement('p');
+  chatnameHeader.id = "header-chat-name";
+  console.log(chatname)
+  chatnameHeader.innerHTML = chatname
+  headerElement.appendChild(chatnameHeader);
+}
+
+const updateMessages = () => {
+    const activechat = document.querySelector('.active');
+    // console.log(activechat)
+    const chat_id = activechat.dataset.chat_id;
+
+    if (chat_id == null) {
+      return;
+    } else {
+      retrieveMessages(chat_id);
+    }
+}
+
+setInterval(updateMessages, 1000)
+
 const convoClick = (event) => {
   const clicked = event.currentTarget;
   if (clicked.classList.contains('active')) {
     console.log("Already active element")
   } else {
-    console.log(clicked.dataset);
+    // console.log(clicked.dataset);
     setActive(clicked);
     clearMessages();
     const dataAttributes = clicked.dataset;
+    console.log(dataAttributes)
     const chat_id = dataAttributes.chat_id;
     document.querySelector('#sndr-chat_id').value = chat_id;
-    retrieveMessages(dataAttributes);
-    // const headerElement = document.querySelector('#header-main')
-    // let chatnameHeader = document.createElement('p');
-    // chatnameHeader.id.add("header-chat-name");
-    // headerElement.appendChild(chatnameHeader);
+    retrieveMessages(dataAttributes.chat_id);
+    clearChatNamefromHeader();
+    addChatNametoHeader(dataAttributes.chat_name);
   }
 }
 
@@ -41,22 +71,7 @@ for(element of conversationElements) {
     element.addEventListener('click', convoClick, false);
 }
 
-const retrieveMessages = (req_info) => {
-    const url = `/api/chats/${req_info.chat_id}/messages`
-    console.log(`${url}`)
-    fetch(url, {
-        method: 'GET'
-    }).then(result => result.json())
-       .then(data => addMessages(data))
-}
-
-const addMessages = (messages) => {
-    console.log(messages)
-    messages.forEach(message => addMessage(message))
-}
-
-const addMessage = (currentmessage) => {
-    console.log(currentmessage)
+const addMessage = (currentmessage, oldmessage=true) => {
     const pageElement = document.querySelector('#main-chat-wrap');
 
     let messageDiv = document.createElement('div');
@@ -67,8 +82,8 @@ const addMessage = (currentmessage) => {
 
     if (currentmessage["sender_id"] == document.querySelector('#sndr-name').value) {
       messageIo.classList.add('out')
-    } else {
-      messageIo.classList.add('in')
+      } else {
+        messageIo.classList.add('in')
     }
 
     let messageContent = document.createElement('p');
@@ -82,16 +97,38 @@ const addMessage = (currentmessage) => {
     let messagePointer = document.createElement('div');
     messagePointer.classList.add('mssg-pointer');
 
+    if (oldmessage) {
+      pageElement.appendChild(messageDiv);
+      } else {
+        pageElement.insertBefore(messageDiv, pageElement.firstChild)
+      }
+
     messageIo.appendChild(messageContent, messageTime);
     messageDiv.appendChild(messageIo, messagePointer);
-    pageElement.appendChild(messageDiv);
 }
+
+const addMessages = (messages) => {
+  // console.log(messages)
+  clearMessages()
+  messages.forEach(message => addMessage(message))
+}
+
+const retrieveMessages = (chat_id) => {
+  const url = `/api/chats/${chat_id}/messages`
+  console.log(`${url}`)
+  fetch(url, {
+      method: 'GET'
+  }).then(result => result.json())
+     .then(data => addMessages(data))
+}
+
 
 //
 // Sending Messages
 //
 
 const submitNewMessage = () => {
+
   const newMessage = document.querySelector('#new-message').value;
   const chat_id = document.querySelector('#sndr-chat_id').value;
   const user_id = document.querySelector('#sndr-name').value;
@@ -109,7 +146,7 @@ const submitNewMessage = () => {
   })
   .then(result => result.json())
   .then(data => {
-    addMessage(data)
+    addMessage(data, oldmessage=false)
     document.querySelector('#new-message').value = '';
   })
 }

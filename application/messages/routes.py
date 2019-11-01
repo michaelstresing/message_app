@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template
 from flask import request, Blueprint
 import sqlalchemy
 from application import models, db
-from application.models import Message
+from application.models import Message, Chat
 from flask_login import current_user
 
 MessageAPI = Blueprint("messages_api", __name__)
@@ -12,10 +12,23 @@ def get_messages(chat_id):
     """
     Gets all the messages for a user_id and chat_id
     """
-    userid = str(current_user.get_id())
-    messagelist = Message.query.filter(Message.chat_id == chat_id, Message.sender_id == userid).all()
+    # userid = str(current_user.get_id())
+    chat = Chat.query.filter(Chat.chat_id == chat_id).first()
+
+    # if userid in chat.users:
+    #     messagelist = Message.query.filter(
+    #                                     Message.chat_id == chat_id
+    #                                     ).order_by(Message.timesent).all()
+    # else:
+    #     return "Not Found", 404
+
+    messagelist = Message.query.filter(
+                                Message.chat_id == chat_id
+                                ).order_by(Message.timesent.desc()).all()
+
     if messagelist is None:
         return 'No messages!', 404
+
     return jsonify([msg.to_messages() for msg in messagelist]), 200
 
 
