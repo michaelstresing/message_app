@@ -8,11 +8,10 @@ class Config(object):
     CSRF_ENABLED = True
     SECRET_KEY = '12345'
     
-    pw = os.environ.get('POSTGRESPW')
-    print(pw)
-    user='postgres'
-    url='localhost'
-    db='messenger'
+    pw = os.environ.get('POSTGRESPW', 'password')
+    user= os.environ.get('DBUSER', 'postgres')
+    url= os.environ.get('URL', "localhost")
+    db= os.environ.get('DATABASENAME', "postgres")
 
     # postgres
     SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://{user}:{pw}@{url}/{db}'
