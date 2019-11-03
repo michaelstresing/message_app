@@ -6,13 +6,16 @@ from application.users.routes import UserAPI
 from application.users.authentication import RegistrationForm, LoginForm
 from application.messages.routes import MessageAPI
 from application.chats.routes import ChatsAPI
+from application.fileuploads.connects3 import FileAPI
 from application.chats.form import CreateChatForm
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
+
 app.register_blueprint(UserAPI, url_prefix='/api/users')
 app.register_blueprint(MessageAPI, url_prefix='/api/chats')
 app.register_blueprint(ChatsAPI, url_prefix='/api/')
+app.register_blueprint(FileAPI, url_prefix='/api/files')
 
 # homepage
 @app.route('/')
