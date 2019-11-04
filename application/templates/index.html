@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>Message App</title>
+    <title>Quack.io</title>
 </head>
 <body>
     <header>
@@ -36,7 +36,7 @@
                             {% endif %}
                         </div>
                         <div class="modal-body">
-                            <button id="upload_profile_pic_button">Upload profile pic</button>
+                            <input type="file" name="{{ user.username }}-profilepic">
                             <br>
                             <div>Profile for: {{ user.first_name }} {{ user.last_name }}</div>
                             <br>
