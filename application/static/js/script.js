@@ -90,6 +90,10 @@ const addMessage = (currentmessage, oldmessage=true) => {
     messageContent.classList.add('mssg');
     messageContent.innerHTML = currentmessage.content;
 
+    let messageSender = document.createElement('p');
+    messageSender.classList.add('sndrname');
+    messageSender.innerHTML = username
+
     let messageTime = document.createElement('p');
     messageTime.classList.add('mssg-time');
     messageTime.innerHTML = currentmessage.timesent;
@@ -151,7 +155,6 @@ const submitNewMessage = () => {
   })
 }
 
-
 // 
 // Chat Modal 
 // 
@@ -182,7 +185,6 @@ window.onclick = function(event) {
     chatmodal.style.display = "none";
   }
 }
-
 
 // 
 // Creating a New Chat 
